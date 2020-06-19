@@ -89,7 +89,9 @@ public class CustomAccountControllerTest {
 	public void contextLoads() {
 
 	}
-
+    //TO DO Add token to http request to connect to the application 
+	// And excute the test
+	// now test failed due to autorization 
 	@Test
 	public void testGetAccountBalance() {
 		HttpHeaders headers = new HttpHeaders();
@@ -107,6 +109,7 @@ public class CustomAccountControllerTest {
 	public void testGetAccountTransactionHistory() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+	//	headers.add(headerName, headerValue);
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<List<Transaction>> response = restTemplate.exchange(
 				getRootUrl() + "/customerAccount/transactionhistory/" + referenceCustomerAccount1, HttpMethod.GET, null,

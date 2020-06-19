@@ -89,6 +89,9 @@ public class TransactionControllerTest {
 
 	}
 
+	// TO DO Add token to http request to connect to the application
+	// And excute the test
+	// now test failed due to autorization
 	@Test
 	public void testSuccessDepositTransaction() {
 		HttpHeaders headers = new HttpHeaders();
