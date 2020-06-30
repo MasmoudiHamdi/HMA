@@ -1,5 +1,6 @@
 package com.ing.bank.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,7 +17,7 @@ public class CustomerAccountService {
 	@Autowired
 	CustomerAccountRepository customerAccountRepository;
 
-	public Double displayAccountBalance(CustomerAccount customerAccount) {
+	public BigDecimal displayAccountBalance(CustomerAccount customerAccount) {
 		return customerAccount.getBalance();
 	}
 

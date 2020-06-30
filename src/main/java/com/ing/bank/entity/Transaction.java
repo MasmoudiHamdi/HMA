@@ -1,7 +1,8 @@
 package com.ing.bank.entity;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,10 +39,10 @@ public class Transaction implements Serializable {
 	private TransactionType transactionType;
 
 	@Column(name = "VALEUR_TRANSACTION")
-	private double transactionValue;
+	private BigDecimal transactionValue;
 
 	@Column(name = "DATE_TRANSACTION")
-	private Date transactionDate;
+	private LocalDate transactionDate;
 
 	@Column(name = "REFERENCE")
 	private String reference;
@@ -50,20 +51,12 @@ public class Transaction implements Serializable {
 		super();
 	}
 
-	public Transaction(TransactionType transactionType, double transactionValue, Date transactionDate,
+	public Transaction(TransactionType transactionType, BigDecimal transactionValue, LocalDate transactionDate,
 			String reference) {
 		super();
 		this.transactionType = transactionType;
 		this.transactionValue = transactionValue;
 		this.transactionDate = transactionDate;
-		this.reference = reference;
-	}
-
-	public String getReference() {
-		return reference;
-	}
-
-	public void setReference(String reference) {
 		this.reference = reference;
 	}
 
@@ -83,32 +76,39 @@ public class Transaction implements Serializable {
 		this.transactionType = transactionType;
 	}
 
-	public double getTransactionValue() {
+	public BigDecimal getTransactionValue() {
 		return transactionValue;
 	}
 
-	public void setTransactionValue(double transactionValue) {
+	public void setTransactionValue(BigDecimal transactionValue) {
 		this.transactionValue = transactionValue;
 	}
 
-	public Date getTransactionDate() {
+	public LocalDate getTransactionDate() {
 		return transactionDate;
 	}
 
-	public void setTransactionDate(Date transactionDate) {
+	public void setTransactionDate(LocalDate transactionDate) {
 		this.transactionDate = transactionDate;
+	}
+
+	public String getReference() {
+		return reference;
+	}
+
+	public void setReference(String reference) {
+		this.reference = reference;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
 		result = prime * result + ((reference == null) ? 0 : reference.hashCode());
 		result = prime * result + ((transactionDate == null) ? 0 : transactionDate.hashCode());
 		result = prime * result + ((transactionType == null) ? 0 : transactionType.hashCode());
-		long temp;
-		temp = Double.doubleToLongBits(transactionValue);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((transactionValue == null) ? 0 : transactionValue.hashCode());
 		return result;
 	}
 
@@ -121,6 +121,8 @@ public class Transaction implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Transaction other = (Transaction) obj;
+		if (id != other.id)
+			return false;
 		if (reference == null) {
 			if (other.reference != null)
 				return false;
@@ -133,7 +135,10 @@ public class Transaction implements Serializable {
 			return false;
 		if (transactionType != other.transactionType)
 			return false;
-		if (Double.doubleToLongBits(transactionValue) != Double.doubleToLongBits(other.transactionValue))
+		if (transactionValue == null) {
+			if (other.transactionValue != null)
+				return false;
+		} else if (!transactionValue.equals(other.transactionValue))
 			return false;
 		return true;
 	}

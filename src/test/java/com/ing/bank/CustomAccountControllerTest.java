@@ -1,8 +1,8 @@
 package com.ing.bank;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -26,9 +26,9 @@ import com.ing.bank.entity.Customer;
 import com.ing.bank.entity.CustomerAccount;
 import com.ing.bank.entity.Transaction;
 import com.ing.bank.model.ActionValidator;
-import com.ing.bank.model.TransactionType;
 import com.ing.bank.repository.CustomerRepository;
 import com.ing.bank.service.FunctionsUtilsService;
+import com.ing.bank.service.TransactionService;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = BankProjectApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -36,6 +36,9 @@ public class CustomAccountControllerTest {
 
 	@Autowired
 	private CustomerRepository customerRepository;
+
+	@Autowired
+	private TransactionService transactionService;
 
 	@Autowired
 	private FunctionsUtilsService functionsUtilsService;
@@ -68,15 +71,16 @@ public class CustomAccountControllerTest {
 
 		referenceCustomer = functionsUtilsService.getAlphaNumericString();
 
-		Transaction transaction1 = new Transaction(TransactionType.DEPOSIT, 100.00, new Date(), referenceTransaction1);
-		Transaction transaction2 = new Transaction(TransactionType.WITHDRAW, 20.00, new Date(), referenceTransaction2);
+		Transaction transaction1 = transactionService.CreateTransactionObject(new BigDecimal(100.00));
+		Transaction transaction2 = transactionService.CreateTransactionObject(new BigDecimal(20.00));
 
 		transactions1.add(transaction1);
 		transactions2.add(transaction2);
 
-		CustomerAccount customerAccount1 = new CustomerAccount(1200.12, 500.00, referenceCustomerAccount1,
-				transactions1);
-		CustomerAccount customerAccount2 = new CustomerAccount(20.12, 100.00, referenceCustomerAccount2, transactions2);
+		CustomerAccount customerAccount1 = new CustomerAccount(new BigDecimal(1200.12), new BigDecimal(500.00),
+				referenceCustomerAccount1, transactions1);
+		CustomerAccount customerAccount2 = new CustomerAccount(new BigDecimal(20.12), new BigDecimal(100.00),
+				referenceCustomerAccount2, transactions2);
 
 		List<CustomerAccount> customerAccounts = new ArrayList<>();
 		customerAccounts.add(customerAccount1);
@@ -89,11 +93,12 @@ public class CustomAccountControllerTest {
 	public void contextLoads() {
 
 	}
-    //TO DO Add token to http request to connect to the application 
+
+	// TO DO Add token to http request to connect to the application
 	// And excute the test
-	// now test failed due to autorization 
+	// now test failed due to autorization
 	@Test
-	public void testGetAccountBalance() {
+	public void shouldGetAccountBalanceWhenCallCustomerAccountBalance() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		RestTemplate restTemplate = new RestTemplate();
@@ -106,10 +111,10 @@ public class CustomAccountControllerTest {
 	}
 
 	@Test
-	public void testGetAccountTransactionHistory() {
+	public void shouldGetAccountTransactionHistoryWhenCallCustomerAccountBalanceTransactionHistory() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-	//	headers.add(headerName, headerValue);
+		// headers.add(headerName, headerValue);
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<List<Transaction>> response = restTemplate.exchange(
 				getRootUrl() + "/customerAccount/transactionhistory/" + referenceCustomerAccount1, HttpMethod.GET, null,

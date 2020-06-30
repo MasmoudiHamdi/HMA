@@ -1,6 +1,7 @@
 package com.ing.bank.entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,10 +36,10 @@ public class CustomerAccount implements Serializable {
 	private long id;
 
 	@Column(name = "SOLDE")
-	private double balance;
+	private BigDecimal balance;
 
 	@Column(name = "DECOUVERT")
-	private double overdraft;
+	private BigDecimal overdraft;
 
 	@Column(name = "REFERENCE")
 	private String reference;
@@ -52,7 +53,7 @@ public class CustomerAccount implements Serializable {
 		super();
 	}
 
-	public CustomerAccount(double balance, double overdraft, String reference, List<Transaction> transactions) {
+	public CustomerAccount(BigDecimal balance, BigDecimal overdraft, String reference, List<Transaction> transactions) {
 		super();
 		this.balance = balance;
 		this.overdraft = overdraft;
@@ -68,19 +69,19 @@ public class CustomerAccount implements Serializable {
 		this.id = id;
 	}
 
-	public double getBalance() {
+	public BigDecimal getBalance() {
 		return balance;
 	}
 
-	public void setBalance(double balance) {
+	public void setBalance(BigDecimal balance) {
 		this.balance = balance;
 	}
 
-	public double getOverdraft() {
+	public BigDecimal getOverdraft() {
 		return overdraft;
 	}
 
-	public void setOverdraft(double overdraft) {
+	public void setOverdraft(BigDecimal overdraft) {
 		this.overdraft = overdraft;
 	}
 
@@ -104,11 +105,9 @@ public class CustomerAccount implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		long temp;
-		temp = Double.doubleToLongBits(balance);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		temp = Double.doubleToLongBits(overdraft);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((balance == null) ? 0 : balance.hashCode());
+		result = prime * result + (int) (id ^ (id >>> 32));
+		result = prime * result + ((overdraft == null) ? 0 : overdraft.hashCode());
 		result = prime * result + ((reference == null) ? 0 : reference.hashCode());
 		result = prime * result + ((transactions == null) ? 0 : transactions.hashCode());
 		return result;
@@ -123,9 +122,17 @@ public class CustomerAccount implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		CustomerAccount other = (CustomerAccount) obj;
-		if (Double.doubleToLongBits(balance) != Double.doubleToLongBits(other.balance))
+		if (balance == null) {
+			if (other.balance != null)
+				return false;
+		} else if (!balance.equals(other.balance))
 			return false;
-		if (Double.doubleToLongBits(overdraft) != Double.doubleToLongBits(other.overdraft))
+		if (id != other.id)
+			return false;
+		if (overdraft == null) {
+			if (other.overdraft != null)
+				return false;
+		} else if (!overdraft.equals(other.overdraft))
 			return false;
 		if (reference == null) {
 			if (other.reference != null)

@@ -1,5 +1,7 @@
 package com.ing.bank.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,24 +20,26 @@ public class TransactionService {
 	@Autowired
 	CustomerAccountRepository customerAccountRepository;
 
-	public static final double MIN_DEPOSIT_VALUE = 0.01;
+	@Autowired
+	private FunctionsUtilsService functionsUtilsService;
+
+	public static final BigDecimal MIN_DEPOSIT_VALUE = new BigDecimal(0.01);
 	public static final String BLOQUED_DEPOSIT_MESSAGE = "Transaction is not allowed !! deposit limit is 0.01";
 	public static final String BLOQUED_WITHDRAW_MESSAGE = "Transaction is not allowed !! not allowed to use overdraft";
 
 	public ActionValidator DepositTransaction(CustomerAccount customerAccount, Transaction transaction) {
-		if (transaction.getTransactionValue() < MIN_DEPOSIT_VALUE) {
+		if (MIN_DEPOSIT_VALUE.compareTo(transaction.getTransactionValue()) > 0) {
 			return new ActionValidator(ActionState.BLOQUED, BLOQUED_DEPOSIT_MESSAGE);
 		}
 
 		List<Transaction> transactions = customerAccount.getTransactions();
 		transactions.add(transaction);
-		customerAccount.setTransactions(transactions);
 		customerAccountRepository.save(customerAccount);
 		return new ActionValidator(ActionState.DONE, "");
 	}
 
 	public ActionValidator WithdrawTransaction(CustomerAccount customerAccount, Transaction transaction) {
-		if (transaction.getTransactionValue() > customerAccount.getBalance()) {
+		if (transaction.getTransactionValue().compareTo(customerAccount.getBalance()) > 0) {
 			return new ActionValidator(ActionState.BLOQUED, BLOQUED_WITHDRAW_MESSAGE);
 		}
 
@@ -46,12 +50,16 @@ public class TransactionService {
 	public CustomerAccount updateAccountInformations(CustomerAccount customerAccount, Transaction transaction) {
 		List<Transaction> transactions = customerAccount.getTransactions();
 		transactions.add(transaction);
-		customerAccount.setTransactions(transactions);
 		if (transaction.getTransactionType().equals(TransactionType.WITHDRAW)) {
-			customerAccount.setBalance(customerAccount.getBalance() - transaction.getTransactionValue());
+			customerAccount.setBalance(customerAccount.getBalance().subtract(transaction.getTransactionValue()));
 		} else {
-			customerAccount.setBalance(customerAccount.getBalance() + transaction.getTransactionValue());
+			customerAccount.setBalance(customerAccount.getBalance().add(transaction.getTransactionValue()));
 		}
 		return customerAccount;
+	}
+
+	public Transaction CreateTransactionObject(BigDecimal transactionValue) {
+		return new Transaction(TransactionType.DEPOSIT, transactionValue, LocalDate.now(),
+				functionsUtilsService.getAlphaNumericString());
 	}
 }
